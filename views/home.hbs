@@ -14,20 +14,71 @@
 </head>
 <body>
 
-    <section class="input">
+    <section class="input" id="input">
         <p class="head">Enter your Message here</p>
         <textarea class="textarea" id="text" autofocus></textarea>
         <div class="encrypt" onclick="encrypt()">
             <p>Encrypt</p>
         </div>
     </section>
+
+    <section class="output" id="output">
+        <p class="head">Message Encrypted Successfully!</p>
+        <div class="info">
+            <p class="link">Message Link:</p>
+            <p class="linkdata data"></p>
+            <p class="otp">One Time Password:</p>
+            <p class="otpdata data"></p>
+        </div>
+    </section>
+
+    <!-- Loader -->
+    <section class="loader" id="loader">
+        <div class="blck">
+            <img src="/images/loader.png" alt="">
+        </div>
+    </section>
     
     <script>
+
+        let input = document.getElementById('input');
+        let output = document.getElementById('output');
+        let loader = document.getElementById('loader');
 
         function encrypt() {
             let text = document.getElementById('text').value.trim();
             if(text.length > 0) {
-                console.log(text);
+                input.classList.add("hide");
+                loader.classList.add("show");
+
+                let url = "http://localhost:2000/";
+
+                let data = {msg: text}
+                
+                // making an api request
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }).then(res => res.json()).then(data => {
+                    
+                    console.log(data);
+
+                    if(data.msg == "success") {
+                        loader.classList.remove("show");
+                    } else {
+                        input.classList.remove("hide");
+                        loader.classList.remove("show");
+                    }
+
+                }).catch(err => {
+                    input.classList.remove("hide");
+                    loader.classList.remove("show");
+                    console.log(err);
+                });
+
             } else {
                 console.log("Error: Empty!");
             }

@@ -19,6 +19,11 @@ app.get('/', (req, res) => {
   res.render('home.hbs');
 });
 
+app.post('/', (req, res) => {
+  let data = req.body;
+  console.log(data);
+  res.json({msg: "success"});
+});
 
 let port = process.env.PORT || 2000;
 
