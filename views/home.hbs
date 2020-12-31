@@ -14,11 +14,25 @@
 </head>
 <body>
 
-
+    <section class="input">
+        <p class="head">Enter your Message here</p>
+        <textarea class="textarea" id="text" autofocus></textarea>
+        <div class="encrypt" onclick="encrypt()">
+            <p>Encrypt</p>
+        </div>
+    </section>
     
-    {{!-- <script>
-        let year = new Date().getFullYear();
-        document.getElementById('year').innerHTML = year;
-    </script> --}}
+    <script>
+
+        function encrypt() {
+            let text = document.getElementById('text').value.trim();
+            if(text.length > 0) {
+                console.log(text);
+            } else {
+                console.log("Error: Empty!");
+            }
+        }
+        
+    </script>
 </body>
 </html>
