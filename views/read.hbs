@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>READ | Message Encryter</title>
+
+    <link rel="icon shortcut" type="image/png" href="/images/camera-dark-icon.png">
+
+    <link rel="stylesheet" href="/styles/read.css">
+
+</head>
+<body>
+
+    <section class="main">
+
+        <div class="MsgID" id="MsgID">{{MsgID}}</div>
+
+        <div class="alert">
+            <p class="alert_text">Message Found !</p>
+        </div>
+        
+        <div class="input" id="input">
+            <p class="head">Enter One Time Password</p>
+            <input type="text" name="otp" id="otp" class="otp" autofocus>
+            <div class="decrypt" onclick="decrypt()">
+                <p>Decrypt</p>
+            </div>
+        </div>
+
+        <div class="output" id="output">
+            <p class="head">You won't be able to read this message again</p>
+            <p class="msg">This tessdshchucda cdbfcn dhbdc dfdf d dfdf dfd fd fdf df df df df d f dfdfdfdf dfd fdfdfd</p>
+        </div>
+    </section>
+
+
+    <!-- Loader -->
+    <section class="loader" id="loader">
+        <div class="blck">
+            <img src="/images/loader.png" alt="">
+        </div>
+    </section>
+    
+    <script>
+
+        let input = document.getElementById('input');
+        let output = document.getElementById('output');
+        let loader = document.getElementById('loader');
+
+        function encrypt() {
+            let text = document.getElementById('text').value.trim();
+            if(text.length > 0) {
+                input.classList.add("hide");
+                loader.classList.add("show");
+
+                let url = "http://localhost:2000/";
+
+                let data = {msg: text}
+                
+                // making an api request
+                fetch(url, {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                }).then(res => res.json()).then(data => {
+
+                    if(data.msg == "success") {
+                        document.querySelector('.output .info .linkdata a').href = data.link;
+                        document.querySelector('.output .info .linkdata a').innerHTML = data.link;
+                        document.querySelector('.output .info .otpdata').innerHTML = data.otp;
+                        loader.classList.remove("show");
+                        output.classList.add("show");
+                    } else {
+                        input.classList.remove("hide");
+                        loader.classList.remove("show");
+                        console.log(data.error);
+                    }
+
+                }).catch(err => {
+                    input.classList.remove("hide");
+                    loader.classList.remove("show");
+                    console.log(err);
+                });
+
+            } else {
+                console.log("Error: Empty!");
+            }
+        }
+        
+    </script>
+</body>
+</html>

@@ -26,7 +26,7 @@ con.connect(function(err) {
     }
 
     if(result.length == 0) {
-      let createTable = "CREATE TABLE messages (MsgID VARCHAR(255) PRIMARY KEY, Message VARCHAR(255))";
+      let createTable = "CREATE TABLE messages (MsgID VARCHAR(255) PRIMARY KEY, Message VARCHAR(1000))";
   
       con.query(createTable, function (err, result) {
         if(err) {
@@ -69,7 +69,7 @@ app.post('/', (req, res) => {
 
     con.query(insertValue, function (err, result) {
       if(err) {
-        res.json({msg: "error", error: "Not able to add records into database!"});
+        return res.json({msg: "error", error: "Not able to add records into database!"});
       }
       console.log(`Record with MsgID: ${MsgID} is added!`);
       res.json({msg: "success", link: `http://localhost:2000/read/${MsgID}`, otp});
@@ -81,13 +81,20 @@ app.post('/', (req, res) => {
 });
 
 app.get('/read/:id', (req, res) => {
-  let MsgID = req.params.id;
-  if(MsgID) {
-    console.log(MsgID);
+  let MsgID = req.params.id.toString();
 
-  } else {
+  let searchMSG = `SELECT * FROM messages WHERE MsgID = '${MsgID}'`;
 
-  }
+  con.query(searchMSG, function (err, result) {
+    if(err) {  
+      return res.render('error.hbs');
+    }
+    if(result.length > 0) {
+      res.render('read.hbs', {MsgID});
+    } else {
+      res.render('error.hbs');
+    }
+  });
 });
 
 let port = process.env.PORT || 2000;
