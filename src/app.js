@@ -99,18 +99,25 @@ app.get('/read/:id', (req, res) => {
 
 app.post('/read', (req, res) => {
   let {MsgID, otp} = req.body;
+
+  if(!MsgID || !otp) return res.json({msg: "error", error: "MsgID or otp is not provided!"});
+
   let searchMSG = `SELECT * FROM messages WHERE MsgID = '${MsgID}'`;
 
+  // Search the encrypted MSG from MsgID
   con.query(searchMSG, function (err, result) {
     if(err) {  
       return res.json({msg: "error", error: "Not able to read records from database!"});
     }
+
+    // MSG Found
     if(result.length > 0) {
       let {Message} = result[0];
 
+      // Decrypting MSG with given otp
       jwt.verify(Message, otp.toString(), (err, decoded) => {
         if(err) {
-          // delete the message
+          // OTP Invalid ,delete the message
           let deleteMSG = `DELETE FROM messages WHERE MsgID = '${MsgID}'`;
           return con.query(deleteMSG, function (er, result) {
             if(er) {  
@@ -120,10 +127,15 @@ app.post('/read', (req, res) => {
             return res.json({msg: "error", error: "Invalid OTP Message Deleted!"});
           });
         }
+
+        // Valid OTP return MSG
         let decryptedMSG = decoded.msg;
         res.json({msg: "success", decryptedMSG});
       });
-    } else {
+    } 
+    
+    // MSG Not Found
+    else {
       res.json({msg: "error", error: "Messages Not Found!"});
     }
   });
