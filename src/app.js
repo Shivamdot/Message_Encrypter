@@ -7,10 +7,11 @@ const mysql = require('mysql');
 const {v4 : uuidv4} = require('uuid')
 
 let con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "1234",
-  database: "learning"
+  host: "database-1.cnnqr16ujokn.us-east-2.rds.amazonaws.com",
+  user: "admin",
+  password: "12345678",
+  port: "3306",
+  database: "neha"
 });
 
 con.connect(function(err) {
