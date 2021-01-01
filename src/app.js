@@ -4,6 +4,7 @@ const bodyParser = require('body-parser');
 const hbs = require('hbs');
 const jwt = require('jsonwebtoken');
 const mysql = require('mysql');
+const {v4 : uuidv4} = require('uuid')
 
 let con = mysql.createConnection({
   host: "localhost",
@@ -20,7 +21,7 @@ con.connect(function(err) {
 
   con.query(checkTable, function (err, result) {
     if(err) {
-      console.log("Not able to able to check available tables");
+      console.log("Not able to check available tables");
       return;
     }
 
@@ -35,9 +36,7 @@ con.connect(function(err) {
         console.log("messages Table created");
       });  
     }
-  });
-  
-  
+  });  
 });
 
 let app = express();
@@ -56,9 +55,39 @@ app.get('/', (req, res) => {
 });
 
 app.post('/', (req, res) => {
-  let data = req.body;
-  console.log(data);
-  res.json({msg: "success"});
+  let {msg} = req.body;
+  if(msg) {
+
+    let MsgID = uuidv4();
+    let otp = Math.floor(1000 + Math.random() * 9000).toString();
+
+    let data = {MsgID, msg};
+    
+    let encryptedMSG = jwt.sign(data, otp);
+
+    let insertValue = `INSERT INTO messages (MsgID, Message) VALUES ('${MsgID}', '${encryptedMSG}')`;
+
+    con.query(insertValue, function (err, result) {
+      if(err) {
+        res.json({msg: "error", error: "Not able to add records into database!"});
+      }
+      console.log(`Record with MsgID: ${MsgID} is added!`);
+      res.json({msg: "success", link: `http://localhost:2000/read/${MsgID}`, otp});
+    });
+    
+  } else {
+    res.json({msg: "error", error: "msg data objetc not present"});
+  }
+});
+
+app.get('/read/:id', (req, res) => {
+  let MsgID = req.params.id;
+  if(MsgID) {
+    console.log(MsgID);
+
+  } else {
+
+  }
 });
 
 let port = process.env.PORT || 2000;

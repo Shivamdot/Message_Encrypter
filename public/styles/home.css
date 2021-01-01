@@ -87,6 +87,8 @@ body {
     font-size: 30px;
     color: rgb(68,68,68);
     margin: 20px 0;
+    background-color: rgb(88, 223, 144);
+    padding: 5px;
 }
 
 .output .info {
@@ -108,6 +110,16 @@ body {
     padding: 5px;
     font-size: 20px;
     text-align: center;
+    overflow: hidden;
+}
+
+.output .info .data a {
+    text-decoration: none;
+    color: rgb(68,68,68);
+}
+
+.output .info .data a:hover {
+    color: rgb(50, 168, 223);
 }
 
 .output .info .otpdata {

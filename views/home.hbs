@@ -26,7 +26,7 @@
         <p class="head">Message Encrypted Successfully!</p>
         <div class="info">
             <p class="link">Message Link:</p>
-            <p class="linkdata data"></p>
+            <p class="linkdata data"><a href="" target="_blank"></a></p>
             <p class="otp">One Time Password:</p>
             <p class="otpdata data"></p>
         </div>
@@ -63,14 +63,17 @@
                     },
                     body: JSON.stringify(data)
                 }).then(res => res.json()).then(data => {
-                    
-                    console.log(data);
 
                     if(data.msg == "success") {
+                        document.querySelector('.output .info .linkdata a').href = data.link;
+                        document.querySelector('.output .info .linkdata a').innerHTML = data.link;
+                        document.querySelector('.output .info .otpdata').innerHTML = data.otp;
                         loader.classList.remove("show");
+                        output.classList.add("show");
                     } else {
                         input.classList.remove("hide");
                         loader.classList.remove("show");
+                        console.log(data.error);
                     }
 
                 }).catch(err => {
