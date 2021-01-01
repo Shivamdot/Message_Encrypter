@@ -73,7 +73,7 @@ app.post('/', (req, res) => {
         return res.json({msg: "error", error: "Not able to add records into database!"});
       }
       console.log(`Record with MsgID: ${MsgID} is added!`);
-      res.json({msg: "success", link: `http://localhost:2000/read/${MsgID}`, otp});
+      res.json({msg: "success", link: `https://neha-submission.herokuapp.com/read/${MsgID}`, otp});
     });
     
   } else {
