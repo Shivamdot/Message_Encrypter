@@ -116,9 +116,9 @@ app.post('/read', (req, res) => {
 
       // Decrypting MSG with given otp
       jwt.verify(Message, otp.toString(), (err, decoded) => {
+        let deleteMSG = `DELETE FROM messages WHERE MsgID = '${MsgID}'`;
         if(err) {
           // OTP Invalid ,delete the message
-          let deleteMSG = `DELETE FROM messages WHERE MsgID = '${MsgID}'`;
           return con.query(deleteMSG, function (er, result) {
             if(er) {  
               return res.json({msg: "error", error: "Not able to read records from database!"});
@@ -130,7 +130,14 @@ app.post('/read', (req, res) => {
 
         // Valid OTP return MSG
         let decryptedMSG = decoded.msg;
-        res.json({msg: "success", decryptedMSG});
+
+        con.query(deleteMSG, function (er, result) {
+          if(er) {  
+            return res.json({msg: "error", error: "Not able to read records from database!"});
+          }
+          console.log(`Record with MsgID: ${MsgID} is deleted!`);
+          res.json({msg: "success", decryptedMSG});
+        });
       });
     } 
     

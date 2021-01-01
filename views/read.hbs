@@ -17,8 +17,8 @@
 
         <div class="MsgID" id="MsgID">{{MsgID}}</div>
 
-        <div class="alert">
-            <p class="alert_text">Message Found !</p>
+        <div class="alert" id="alert">
+            <p class="alert_text" id="alert_text">Message Found !</p>
         </div>
         
         <div class="input" id="input">
@@ -31,7 +31,7 @@
 
         <div class="output" id="output">
             <p class="head">You won't be able to read this message again</p>
-            <p class="msg">This tessdshchucda cdbfcn dhbdc dfdf d dfdf dfd fd fdf df df df df d f dfdfdfdf dfd fdfdfd</p>
+            <p class="msg"></p>
         </div>
     </section>
 
@@ -48,16 +48,20 @@
         let input = document.getElementById('input');
         let output = document.getElementById('output');
         let loader = document.getElementById('loader');
+        let alert = document.getElementById('alert');
+        let alert_text = document.getElementById('alert_text');
+        let MsgID = document.getElementById('MsgID').innerHTML.toString();
 
-        function encrypt() {
-            let text = document.getElementById('text').value.trim();
-            if(text.length > 0) {
+        function decrypt() {
+            let otp = document.getElementById('otp').value.trim();
+            if(otp.length == 4) {
+
                 input.classList.add("hide");
                 loader.classList.add("show");
 
-                let url = "http://localhost:2000/";
+                let url = "http://localhost:2000/read";
 
-                let data = {msg: text}
+                let data = {MsgID, otp};
                 
                 // making an api request
                 fetch(url, {
@@ -69,25 +73,32 @@
                 }).then(res => res.json()).then(data => {
 
                     if(data.msg == "success") {
-                        document.querySelector('.output .info .linkdata a').href = data.link;
-                        document.querySelector('.output .info .linkdata a').innerHTML = data.link;
-                        document.querySelector('.output .info .otpdata').innerHTML = data.otp;
-                        loader.classList.remove("show");
+                        alert.classList.remove("red");
+                        alert_text.innerText = "Message Decrypted Successfully!";
+                        output.querySelector('.msg').innerHTML = data.decryptedMSG;
                         output.classList.add("show");
+                        loader.classList.remove("show");
+                    } else if(data.msg == 'Invalid OTP Message Deleted!') {
+                        alert.classList.add("red");
+                        alert_text.innerText = data.error;
+                        loader.classList.remove("show");
                     } else {
+                        alert.classList.add("red");
+                        alert_text.innerText = data.error;
                         input.classList.remove("hide");
                         loader.classList.remove("show");
-                        console.log(data.error);
                     }
-
                 }).catch(err => {
+                    alert.classList.add("red");
+                    alert_text.innerText = "Not able to Connect the Server!";
                     input.classList.remove("hide");
                     loader.classList.remove("show");
                     console.log(err);
                 });
 
             } else {
-                console.log("Error: Empty!");
+                alert.classList.add("red");
+                alert_text.innerText = "Invalid OTP!"
             }
         }
         
