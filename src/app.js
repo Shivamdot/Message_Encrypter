@@ -97,6 +97,38 @@ app.get('/read/:id', (req, res) => {
   });
 });
 
+app.post('/read', (req, res) => {
+  let {MsgID, otp} = req.body;
+  let searchMSG = `SELECT * FROM messages WHERE MsgID = '${MsgID}'`;
+
+  con.query(searchMSG, function (err, result) {
+    if(err) {  
+      return res.json({msg: "error", error: "Not able to read records from database!"});
+    }
+    if(result.length > 0) {
+      let {Message} = result[0];
+
+      jwt.verify(Message, otp.toString(), (err, decoded) => {
+        if(err) {
+          // delete the message
+          let deleteMSG = `DELETE FROM messages WHERE MsgID = '${MsgID}'`;
+          return con.query(deleteMSG, function (er, result) {
+            if(er) {  
+              return res.json({msg: "error", error: "Not able to read records from database!"});
+            }
+            console.log(`Record with MsgID: ${MsgID} is deleted!`);
+            return res.json({msg: "error", error: "Invalid OTP Message Deleted!"});
+          });
+        }
+        let decryptedMSG = decoded.msg;
+        res.json({msg: "success", decryptedMSG});
+      });
+    } else {
+      res.json({msg: "error", error: "Messages Not Found!"});
+    }
+  });
+})
+
 let port = process.env.PORT || 2000;
 
 app.listen(port, () => {
